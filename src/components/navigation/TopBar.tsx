@@ -12,10 +12,6 @@ export const TopBar: React.FC = () => {
       </View>
       
       <View style={styles.rightSection}>
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Settings</Text>
-        </TouchableOpacity>
-        
         {!isMobile && (
           <TouchableOpacity style={styles.button}>
             <Text style={styles.buttonText}>Profile</Text>

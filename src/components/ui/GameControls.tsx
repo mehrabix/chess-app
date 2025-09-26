@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, BackHandler, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { resetGame, startNewGame } from '../../store/slices/gameSlice';
 
@@ -19,6 +19,24 @@ export const GameControls: React.FC = () => {
     dispatch(startNewGame({ mode: 'computer', difficulty: 'medium' }));
   };
 
+  const handleExitApp = () => {
+    Alert.alert(
+      'Exit App',
+      'Are you sure you want to exit the chess app?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Exit',
+          style: 'destructive',
+          onPress: () => BackHandler.exitApp(),
+        },
+      ]
+    );
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.buttonRow}>
@@ -36,6 +54,10 @@ export const GameControls: React.FC = () => {
           <Text style={styles.buttonText}>Reset Game</Text>
         </TouchableOpacity>
       )}
+      
+      <TouchableOpacity style={[styles.button, styles.exitButton]} onPress={handleExitApp}>
+        <Text style={styles.buttonText}>Exit App</Text>
+      </TouchableOpacity>
       
       {currentGame && (
         <View style={styles.gameInfo}>
@@ -78,6 +100,11 @@ const styles = StyleSheet.create({
   resetButton: {
     backgroundColor: '#FF3B30',
     alignSelf: 'center',
+  },
+  exitButton: {
+    backgroundColor: '#666',
+    alignSelf: 'center',
+    marginTop: 10,
   },
   buttonText: {
     color: '#fff',
