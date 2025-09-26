@@ -2,6 +2,7 @@
   "name": "chess-app-rn",
   "main": "expo-router/entry",
   "version": "1.0.0",
+  "description": "A React Native chess application built with Expo",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",

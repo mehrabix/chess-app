@@ -1,13 +1,10 @@
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 export default function HomeScreen() {
   return (
-    <ThemedView style={styles.container}>
-      <ThemedText type="title">Chess App</ThemedText>
-      <ThemedText>Welcome to your chess application!</ThemedText>
-    </ThemedView>
+    <View style={styles.container}>
+      <Text style={styles.title}>Chess</Text>
+    </View>
   );
 }
 
@@ -16,6 +13,10 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 20,
+    backgroundColor: '#fff',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
   },
 });
