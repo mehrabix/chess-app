@@ -5,8 +5,10 @@ import { Provider } from 'react-redux';
 import { store } from '../src/store';
 
 // Configure Reanimated to suppress strict mode warnings
+import * as NavigationBar from 'expo-navigation-bar';
+import * as StatusBarExpo from 'expo-status-bar';
 import { useEffect } from 'react';
-import { Alert, BackHandler, LogBox } from 'react-native';
+import { Alert, BackHandler, LogBox, Platform } from 'react-native';
 import { configureReanimatedLogger } from 'react-native-reanimated';
 
 // Disable Reanimated strict mode warnings
@@ -23,6 +25,25 @@ LogBox.ignoreLogs([
 
 export default function RootLayout() {
   useEffect(() => {
+    // Hide system UI on Android
+    if (Platform.OS === 'android') {
+      const hideSystemUI = async () => {
+        try {
+          // Hide navigation bar
+          await NavigationBar.setVisibilityAsync('hidden');
+          // Note: setBehaviorAsync is not supported with edge-to-edge enabled
+          // await NavigationBar.setBehaviorAsync('overlay-swipe');
+          
+          // Hide status bar
+          StatusBarExpo.setStatusBarHidden(true, 'fade');
+        } catch (error) {
+          console.log('Error hiding system UI:', error);
+        }
+      };
+
+      hideSystemUI();
+    }
+
     const backAction = () => {
       Alert.alert(
         'Exit App',
@@ -54,7 +75,7 @@ export default function RootLayout() {
         <Stack>
           <Stack.Screen name="index" options={{ headerShown: false }} />
         </Stack>
-        <StatusBar style="auto" />
+        <StatusBar style="auto" hidden={Platform.OS === 'android'} />
       </Provider>
     </GestureHandlerRootView>
   );

@@ -1,6 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useAppDispatch, useAppSelector } from '../../hooks';
 import { useResponsive } from '../../hooks/useResponsive';
+import { resetGame, startNewGame } from '../../store/slices/gameSlice';
 
 interface BottomNavigationProps {
   activeTab: string;
@@ -8,17 +10,40 @@ interface BottomNavigationProps {
 }
 
 const tabs = [
-  { id: 'game', label: 'Game', icon: '♟️' },
-  { id: 'history', label: 'History', icon: '📜' },
-  { id: 'analysis', label: 'Analysis', icon: '🔍' },
-  { id: 'settings', label: 'Settings', icon: '⚙️' },
+  { id: 'new-game', label: 'New Game', icon: '🆕' },
+  { id: 'computer', label: 'vs Computer', icon: '🤖' },
+  { id: 'reset', label: 'Reset', icon: '🔄' },
+  { id: 'exit', label: 'Exit', icon: '🚪' },
 ];
 
 export const BottomNavigation: React.FC<BottomNavigationProps> = ({ 
   activeTab, 
   onTabChange 
 }) => {
+  const dispatch = useAppDispatch();
+  const { isGameActive } = useAppSelector((state) => state.game);
   const { isMobile } = useResponsive();
+
+  const handleTabPress = (tabId: string) => {
+    switch (tabId) {
+      case 'new-game':
+        dispatch(startNewGame({ mode: 'local' }));
+        break;
+      case 'computer':
+        dispatch(startNewGame({ mode: 'computer', difficulty: 'medium' }));
+        break;
+      case 'reset':
+        if (isGameActive) {
+          dispatch(resetGame());
+        }
+        break;
+      case 'exit':
+        // Exit functionality is handled by the global back handler
+        break;
+      default:
+        onTabChange(tabId);
+    }
+  };
 
   return (
     <View style={[styles.container, isMobile && styles.mobileContainer]}>
@@ -28,17 +53,24 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
           style={[
             styles.tab,
             activeTab === tab.id && styles.activeTab,
-            isMobile && styles.mobileTab
+            isMobile && styles.mobileTab,
+            tab.id === 'reset' && !isGameActive && styles.disabledTab
           ]}
-          onPress={() => onTabChange(tab.id)}
+          onPress={() => handleTabPress(tab.id)}
+          disabled={tab.id === 'reset' && !isGameActive}
         >
-          <Text style={[styles.icon, isMobile && styles.mobileIcon]}>
+          <Text style={[
+            styles.icon, 
+            isMobile && styles.mobileIcon,
+            tab.id === 'reset' && !isGameActive && styles.disabledIcon
+          ]}>
             {tab.icon}
           </Text>
           <Text style={[
             styles.label,
             activeTab === tab.id && styles.activeLabel,
-            isMobile && styles.mobileLabel
+            isMobile && styles.mobileLabel,
+            tab.id === 'reset' && !isGameActive && styles.disabledLabel
           ]}>
             {tab.label}
           </Text>
@@ -97,5 +129,14 @@ const styles = StyleSheet.create({
   activeLabel: {
     color: '#2196f3',
     fontWeight: '600',
+  },
+  disabledTab: {
+    opacity: 0.3,
+  },
+  disabledIcon: {
+    opacity: 0.3,
+  },
+  disabledLabel: {
+    opacity: 0.3,
   },
 });

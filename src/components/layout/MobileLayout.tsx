@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { BottomNavigation } from '../navigation/BottomNavigation';
+import { DrawerLayout } from 'react-native-gesture-handler';
+import { ModernDrawerNavigation } from '../navigation/ModernDrawerNavigation';
 import { TopBar } from '../navigation/TopBar';
 
 interface MobileLayoutProps {
@@ -8,21 +9,22 @@ interface MobileLayoutProps {
 }
 
 export const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
-  const [activeTab, setActiveTab] = useState('game');
+  const drawerRef = useRef<DrawerLayout>(null);
+
+  const handleMenuPress = () => {
+    drawerRef.current?.openDrawer();
+  };
 
   return (
-    <View style={styles.container}>
-      <TopBar />
-      
-      <View style={styles.content}>
-        {children}
+    <ModernDrawerNavigation ref={drawerRef}>
+      <View style={styles.container}>
+        <TopBar onMenuPress={handleMenuPress} />
+        
+        <View style={styles.content}>
+          {children}
+        </View>
       </View>
-      
-      <BottomNavigation 
-        activeTab={activeTab} 
-        onTabChange={setActiveTab}
-      />
-    </View>
+    </ModernDrawerNavigation>
   );
 };
 

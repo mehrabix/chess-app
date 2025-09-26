@@ -1,23 +1,18 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useResponsive } from '../../hooks/useResponsive';
 
-export const TopBar: React.FC = () => {
-  const { isMobile } = useResponsive();
+interface TopBarProps {
+  onMenuPress: () => void;
+}
 
+export const TopBar: React.FC<TopBarProps> = ({ onMenuPress }) => {
   return (
-    <View style={[styles.container, isMobile && styles.mobileContainer]}>
-      <View style={styles.leftSection}>
-        <Text style={[styles.title, isMobile && styles.mobileTitle]}>Chess Master</Text>
-      </View>
-      
-      <View style={styles.rightSection}>
-        {!isMobile && (
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.buttonText}>Profile</Text>
-          </TouchableOpacity>
-        )}
-      </View>
+    <View style={styles.container}>
+      <TouchableOpacity style={styles.menuButton} onPress={onMenuPress}>
+        <Text style={styles.menuIcon}>☰</Text>
+      </TouchableOpacity>
+      <Text style={styles.title}>Chess</Text>
+      <View style={styles.placeholder} />
     </View>
   );
 };
@@ -25,8 +20,8 @@ export const TopBar: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingVertical: 15,
     backgroundColor: '#fff',
@@ -36,35 +31,24 @@ const styles = StyleSheet.create({
     boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
     elevation: 5,
   },
-  mobileContainer: {
-    paddingHorizontal: 15,
-    paddingVertical: 12,
+  menuButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#f0f0f0',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  leftSection: {
-    flex: 1,
+  menuIcon: {
+    fontSize: 18,
+    color: '#333',
   },
   title: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#333',
   },
-  mobileTitle: {
-    fontSize: 20,
-  },
-  rightSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
-  button: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    backgroundColor: '#2196f3',
-    borderRadius: 6,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: '600',
+  placeholder: {
+    width: 40, // Same width as menu button for balance
   },
 });

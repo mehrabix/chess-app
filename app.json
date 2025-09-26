@@ -22,11 +22,14 @@
       "predictiveBackGestureEnabled": false,
       "softwareKeyboardLayoutMode": "pan",
       "statusBar": {
-        "hidden": true
+        "hidden": true,
+        "translucent": false
       },
       "navigationBar": {
-        "visible": false
-      }
+        "visible": false,
+        "color": "#000000"
+      },
+      "fullScreen": true
     },
     "web": {
       "output": "static",

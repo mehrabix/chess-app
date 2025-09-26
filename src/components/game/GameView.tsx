@@ -1,5 +1,6 @@
 import React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
+import { useAppSelector } from '../../hooks';
 import { useResponsive } from '../../hooks/useResponsive';
 import { ChessBoard } from '../chess/ChessBoard';
 import { CapturedPieces } from '../ui/CapturedPieces';
@@ -9,6 +10,7 @@ import { MoveHistory } from '../ui/MoveHistory';
 
 export const GameView: React.FC = () => {
   const { isMobile, isTablet } = useResponsive();
+  const { currentGame } = useAppSelector((state) => state.game);
 
   if (isMobile) {
     return (
@@ -21,10 +23,12 @@ export const GameView: React.FC = () => {
         <View style={styles.mobileBoard}>
           <ChessBoard />
         </View>
-        <View style={styles.mobilePanels}>
-          <GameStatus />
-          <GameControls />
-        </View>
+        {currentGame && (
+          <View style={styles.mobilePanels}>
+            <GameStatus />
+            <GameControls />
+          </View>
+        )}
       </ScrollView>
     );
   }
@@ -38,17 +42,21 @@ export const GameView: React.FC = () => {
         bounces={true}
       >
         <View style={styles.tabletContent}>
-          <View style={styles.tabletLeft}>
-            <GameStatus />
-            <CapturedPieces />
-            <GameControls />
-          </View>
-          <View style={styles.tabletCenter}>
+          {currentGame && (
+            <View style={styles.tabletLeft}>
+              <GameStatus />
+              <CapturedPieces />
+              <GameControls />
+            </View>
+          )}
+          <View style={[styles.tabletCenter, !currentGame && styles.tabletCenterFull]}>
             <ChessBoard />
           </View>
-          <View style={styles.tabletRight}>
-            <MoveHistory />
-          </View>
+          {currentGame && (
+            <View style={styles.tabletRight}>
+              <MoveHistory />
+            </View>
+          )}
         </View>
       </ScrollView>
     );
@@ -57,17 +65,21 @@ export const GameView: React.FC = () => {
   // Desktop layout
   return (
     <View style={styles.desktopContainer}>
-      <View style={styles.desktopLeft}>
-        <GameStatus />
-        <CapturedPieces />
-        <GameControls />
-      </View>
-      <View style={styles.desktopCenter}>
+      {currentGame && (
+        <View style={styles.desktopLeft}>
+          <GameStatus />
+          <CapturedPieces />
+          <GameControls />
+        </View>
+      )}
+      <View style={[styles.desktopCenter, !currentGame && styles.desktopCenterFull]}>
         <ChessBoard />
       </View>
-      <View style={styles.desktopRight}>
-        <MoveHistory />
-      </View>
+      {currentGame && (
+        <View style={styles.desktopRight}>
+          <MoveHistory />
+        </View>
+      )}
     </View>
   );
 };
@@ -118,6 +130,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  tabletCenterFull: {
+    flex: 1,
+    width: '100%',
+  },
   tabletRight: {
     flex: 1,
     maxWidth: 250,
@@ -138,6 +154,10 @@ const styles = StyleSheet.create({
     flex: 2,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  desktopCenterFull: {
+    flex: 1,
+    width: '100%',
   },
   desktopRight: {
     flex: 1,
