@@ -1,19 +1,34 @@
 import Chessboard from '@hasenkrug/react-native-chessboard-adapted';
 import { Chess } from 'chess.js';
 import React, { useState } from 'react';
-import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { useAppDispatch, useAppSelector } from '../../hooks';
+import { useResponsive } from '../../hooks/useResponsive';
 import { stockfishEngine } from '../../services/stockfish';
-import { makeMove, startNewGame } from '../../store/slices/gameSlice';
-
-const { width, height } = Dimensions.get('window');
-const BOARD_SIZE = Math.min(width - 20, height * 0.6, 350);
+import { makeMove } from '../../store/slices/gameSlice';
 
 export const ChessBoard: React.FC = () => {
   const dispatch = useAppDispatch();
   const { currentGame } = useAppSelector((state) => state.game);
+  const { width, height, isMobile, isTablet } = useResponsive();
   const [chess] = useState(new Chess());
   const [isComputerThinking, setIsComputerThinking] = useState(false);
+
+  // Calculate responsive board size
+  const getBoardSize = () => {
+    if (isMobile) {
+      // Mobile: use most of the available width, but leave some padding
+      return Math.min(width - 60, height * 0.35, 320);
+    } else if (isTablet) {
+      // Tablet: balance between width and height
+      return Math.min(width * 0.4, height * 0.5, 400);
+    } else {
+      // Desktop: larger board
+      return Math.min(width * 0.3, height * 0.6, 500);
+    }
+  };
+
+  const boardSize = getBoardSize();
 
   const handleMove = async (move: any) => {
     try {
@@ -77,23 +92,21 @@ export const ChessBoard: React.FC = () => {
     }
   };
 
-  const handleNewGame = () => {
-    chess.reset();
-    dispatch(startNewGame({ mode: 'local' }));
-  };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, isMobile && styles.mobileContainer]}>
       {isComputerThinking && (
-        <View style={styles.thinkingIndicator}>
-          <Text style={styles.thinkingText}>Computer is thinking...</Text>
+        <View style={[styles.thinkingIndicator, isMobile && styles.mobileThinkingIndicator]}>
+          <Text style={[styles.thinkingText, isMobile && styles.mobileThinkingText]}>
+            Computer is thinking...
+          </Text>
         </View>
       )}
-      <View style={styles.boardWrapper}>
+      <View style={[styles.boardWrapper, { width: boardSize, height: boardSize }]}>
         <Chessboard
           fen={chess.fen()}
           onMove={handleMove}
-          boardSize={BOARD_SIZE}
+          boardSize={boardSize}
           colors={{
             black: '#B58863',
             white: '#F0D9B5',
@@ -106,27 +119,26 @@ export const ChessBoard: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f0f0f0',
+    backgroundColor: 'transparent',
     padding: 10,
+    position: 'relative',
+  },
+  mobileContainer: {
+    padding: 5,
+    minHeight: 300,
   },
   boardWrapper: {
-    width: BOARD_SIZE,
-    height: BOARD_SIZE,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#fff',
     borderRadius: 8,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    // @ts-ignore - Web compatibility
+    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.25)',
     elevation: 5,
+    position: 'relative',
+    zIndex: 1,
   },
   thinkingIndicator: {
     position: 'absolute',
@@ -138,9 +150,18 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     zIndex: 1000,
   },
+  mobileThinkingIndicator: {
+    top: 10,
+    left: 10,
+    right: 10,
+    padding: 8,
+  },
   thinkingText: {
     color: 'white',
     textAlign: 'center',
     fontSize: 16,
+  },
+  mobileThinkingText: {
+    fontSize: 14,
   },
 });

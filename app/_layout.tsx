@@ -13,10 +13,11 @@ configureReanimatedLogger({
   strict: false,
 });
 
-// Ignore all Reanimated warnings
+// Ignore all Reanimated warnings and shadow deprecation warnings
 LogBox.ignoreLogs([
   '[Reanimated] Reading from `value` during component render',
   '[Reanimated]',
+  '"shadow*" style props are deprecated. Use "boxShadow".',
 ]);
 
 export default function RootLayout() {

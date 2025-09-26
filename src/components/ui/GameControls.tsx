@@ -60,6 +60,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderTopWidth: 1,
     borderTopColor: '#e0e0e0',
+    position: 'relative',
+    zIndex: 2,
   },
   buttonRow: {
     flexDirection: 'row',
